@@ -59,11 +59,11 @@
         </dependency>
 
 
-        <!--&lt;!&ndash; Migracoes - Flyway &ndash;&gt;-->
-        <!--<dependency>-->
-        <!--<groupId>org.flywaydb</groupId>-->
-        <!--<artifactId>flyway-core</artifactId>-->
-        <!--</dependency>-->
+        <!-- Migracoes - Flyway -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
 
         <!-- Hibernate Java 8 Support -->
         <dependency>

@@ -12,6 +12,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+import static com.api.mv.sso.token.RefreshTokenPostProcessor.COOKIE_NAME;
+
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
@@ -26,8 +28,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret("@ngul@r0")
                 .scopes("read", "write")
                 //password flow. Mando usuário e senha para o servidor oauth validar
-                .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(180).refreshTokenValiditySeconds(3600*24);
+                .authorizedGrantTypes("password", COOKIE_NAME)
+                .accessTokenValiditySeconds(20).refreshTokenValiditySeconds(3600*24);
     }
 
     @Override
