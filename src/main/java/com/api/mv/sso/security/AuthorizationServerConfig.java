@@ -9,56 +9,48 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-
-    private final AuthenticationManager authenticationManager;
-
     @Autowired
-    public AuthorizationServerConfig(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+    private AuthenticationManager authenticationManager;
 
-
-    //configura como o cliente acessará as informações
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-//        clients.jdbc(dataSource())
-//                .withClient("sampleClientId")
-//                .authorizedGrantTypes("implicit")
-//                .scopes("read")
-//                .autoApprove(true)
-//                .and()
-//                .withClient("clientIdPassword")
-//                .secret("secret")
-//                .authorizedGrantTypes(
-//                        "password","authorization_code", "refresh_token")
-//                .scopes("read");
-
+        //aplicação cliente
         clients.inMemory()
                 .withClient("angular")
                 .secret("@ngul@r0")
                 .scopes("read", "write")
-                .authorizedGrantTypes("password")
-                .accessTokenValiditySeconds(1800);
+                //password flow. Mando usuário e senha para o servidor oauth validar
+                .authorizedGrantTypes("password", "refresh_token")
+                .accessTokenValiditySeconds(180).refreshTokenValiditySeconds(3600*24);
     }
 
-
-    //configura os endpoints para salvar o endpoint
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .tokenStore(tokenStore())
-                //valida se está tudo ok.
+                .accessTokenConverter(accessTokenConverter())
+                //
+                .reuseRefreshTokens(false)
+
                 .authenticationManager(authenticationManager);
     }
 
     @Bean
+    public JwtAccessTokenConverter accessTokenConverter() {
+        JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
+        accessTokenConverter.setSigningKey("algaworks");
+        return accessTokenConverter;
+    }
+
+    @Bean
     public TokenStore tokenStore() {
-        return new InMemoryTokenStore();
+        return new JwtTokenStore(accessTokenConverter());
     }
 
 }
